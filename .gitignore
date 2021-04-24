@@ -9,3 +9,13 @@ arduino_clock_divider_schematic/schematic-positions-to-layout.debug
 arduino_clock_divider_schematic/arduino_clock_divider.net
 arduino_clock_divider_schematic/arduino_clock_divider.kicad_pcb
 arduino_clock_divider_schematic/arduino_clock_divider-cache.lib
+*.drl
+*.gbr
+*.gto
+*.gts
+*.gtl
+*.gm1
+*.gbo
+*.gbs
+*.gbl
+*.zip
