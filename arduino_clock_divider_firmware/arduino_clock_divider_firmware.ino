@@ -32,17 +32,18 @@
 #define SER_LATCH_PIN   A2
 
 // outputs
-#define N_OUTS    8   // number of outputs
-#define N_ROTATE  4   // rotate last N outputs
-#define MIN_DIV   1   // minimum division
-#define MAX_DIV   199 // maximum division
+#define N_OUTS    8                   // number of outputs
+#define N_ROTATE  4                   // rotate last N outputs
+#define ROTATE_FROM (N_OUTS-N_ROTATE) // first output to rotate
+#define MIN_DIV   1                   // minimum division
+#define MAX_DIV   199                 // maximum division
 
 // displays
-#define N_MAX7219     N_OUTS/4  // number of display drivers
-#define BRIGHTNESS    4         // screen brightness (0-15)
-#define SELECT_BLINK  200       // blink time during selecting (ms)
-#define EDIT_BLINK    50        // blink time during editing (ms)
-#define TIMEOUT       5000      // timeout after which editing is cancelled (ms)
+#define N_MAX7219     (N_OUTS/4)  // number of display drivers
+#define BRIGHTNESS    4           // screen brightness (0-15)
+#define SELECT_BLINK  200         // blink time during selecting (ms)
+#define EDIT_BLINK    50          // blink time during editing (ms)
+#define TIMEOUT       5000        // timeout after which editing is cancelled (ms)
 
 // divisions
 byte division[N_OUTS]  = {1, 2, 3, 4, 8, 12, 16, 32}; // initial (startup) divisions
@@ -54,7 +55,7 @@ byte prev_selected_out = 0;   // previously selected output
 
 // displays
 LedControl lc = LedControl(DISP_DATA_PIN, DISP_CLOCK_PIN, DISP_LOAD_PIN, N_MAX7219);
-#include "set_displays.h" // this file holds the function for writing numbers to the displays
+#include "set_displays.h"         // this file holds the function for writing numbers to the displays
 
 // modes
 bool selectMode = false;  // selecting an output
@@ -119,7 +120,7 @@ void setup() {
 
 void loop() {
   bool div_changed = false; // has any division changed this loop?
-  
+
   // read buttons/inputs
   cur_enc_but_state    = digitalRead(ENC_S_PIN);
   cur_rot_up_state     = digitalRead(ROT_UP_PIN);
@@ -142,7 +143,7 @@ void loop() {
       division[selected_out] = selected_div; // confirm edited division on last push
       counter[selected_out] = 0;             // reset this outputs counter
       editMode   = false;                    // jump back to selection mode
-      selectMode = true;  
+      selectMode = true;
       div_changed  = true;
     }
   }
@@ -163,15 +164,16 @@ void loop() {
     div_changed = true;
   }
   if (!cur_rot_down_state && prev_rot_down_state) {
-    rotate(-1);
+    rotate(N_ROTATE - 1);
     div_changed = true;
   }
   if (!cur_reset_state && prev_reset_state) {
-    rotate(-rotation);
-    
-    for (int i = 0; i < N_OUTS; i++) {
+    rotate(N_ROTATE - rotation);
+
+    noInterrupts(); // do not interrupts resetting of counters
+    for (int i = 0; i < N_OUTS; i++)
       counter[i] = 0; // reset counters
-    }
+    interrupts();  // re-enable interrupts
     div_changed = true;
   }
 
@@ -249,29 +251,36 @@ void encoder_isr() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // rotate the division of the last N_ROTATE outputs with a given increment
-void rotate(int increment) {
+void rotate(byte increment) {
   byte new_division[N_OUTS];
+  byte new_counter[N_OUTS];
   byte new_selected_out = selected_out;
 
-  for (int i = N_OUTS - N_ROTATE; i < N_OUTS; i++) {  // loop over all rotating outputs
-    byte moveTo = (i + increment - (N_OUTS - N_ROTATE) + N_ROTATE) % N_ROTATE + (N_OUTS - N_ROTATE);  // find the output to move the current division to
-    new_division[moveTo] = division[i];               // save the new division
+  for (int i = ROTATE_FROM; i < N_OUTS; i++) {  // loop over all rotating outputs
+    byte moveTo = (i + increment - ROTATE_FROM) % N_ROTATE + ROTATE_FROM;  // find the output to move the current division to
+    new_division[moveTo] = division[i];         // save the new division
+    new_counter[moveTo]  = counter[i];          // save the counter value
     if (selected_out == i) {
-      new_selected_out = moveTo;                      // move the selected output along
+      new_selected_out = moveTo;                // move the selected output along
     }
   }
 
-  selected_out = new_selected_out;                    // update the currently selected output
-
-  for (int i = N_OUTS - N_ROTATE; i < N_OUTS; i++) {  // loop over all rotating outputs
-    division[i] = new_division[i];                    // assign the new division
-    if (selected_out == i)                            // display the new division
-      set_display(selected_out, selected_div);                    
-      else
-      set_display(i, division[i]);   
+  noInterrupts();                               // disable interrupts while assigning the new values
+  for (int i = ROTATE_FROM; i < N_OUTS; i++) {  // loop over all rotating outputs
+    division[i] = new_division[i];              // assign the new division
+    counter[i]  = new_counter[i];               // assign the new counter
   }
+  interrupts();                                 // re-enable interrupts
 
-  rotation = (rotation + increment + N_ROTATE) % N_ROTATE; // remember the current rotation
+  for (int i = ROTATE_FROM; i < N_OUTS; i++) {  // loop over all rotating outputs
+    if (selected_out == i)                            // display the new division
+      set_display(selected_out, selected_div);
+    else
+      set_display(i, division[i]);
+  }
+  selected_out = new_selected_out;               // update the currently selected output
+
+  rotation = (rotation + increment) % N_ROTATE; // remember the current rotation
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,10 +293,10 @@ void clock_isr() {
   digitalWrite(SER_LATCH_PIN, LOW);
 
   if (digitalRead(CLOCK_PIN)) {
-    set_outputs_next();    
+    set_outputs_next();
   }
   else {
-    set_outputs_low();     
+    set_outputs_low();
     // increment counters
     for (int i = 0; i < N_OUTS; i++) {
       counter[i]++;
@@ -301,13 +310,13 @@ void clock_isr() {
 // set all outputs low on the shift register
 void set_outputs_low() {
   noInterrupts(); // do not interrupt writing to the shift register
-  
+
   digitalWrite(SER_DATA_PIN, LOW); // set output low
   for (int i = 0; i < N_OUTS; i++) {
     digitalWrite(SER_CLOCK_PIN, HIGH); // give clock pin a pulse
     digitalWrite(SER_CLOCK_PIN, LOW);
   }
-  
+
   interrupts(); // re-enable interrupts
 }
 
@@ -316,7 +325,7 @@ void set_outputs_low() {
 // set the shift register in anticipation of the next clock pulse
 void set_outputs_next() {
   noInterrupts(); // do not interrupt writing to the shift register
-  
+
   // loop over the outputs
   for (int i = 0; i < N_OUTS; i++) {
     if (counter[i] == 0)                 // check the counter value
@@ -327,6 +336,6 @@ void set_outputs_next() {
     digitalWrite(SER_CLOCK_PIN, HIGH);   // give clock pin a pulse
     digitalWrite(SER_CLOCK_PIN, LOW);
   }
-  
+
   interrupts(); // re-enable interrupts
 }
