@@ -13,236 +13,244 @@
 
 #define CLEAR 255
 
+byte display_data[N_MAX7219][8];  // current display data
+
 void set_display(byte index, byte value) {
   // find the right display to write to
   // this is specific to how to displays are wired to the MAX7219's
   byte address = index / 4;
-  byte row = 4 * ((index % 4) / 2);
-  byte col = (4 * (index % 2)) + 1;
+  byte startRow = 4 * ((index % 4) / 2);
+  byte startCol = (4 * (index % 2)) + 3;
 
   // clear the screen if CLEAR value is found
   if (value == CLEAR) {
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-        lc.setLed(address, row + i, (col + j)%8, false);
+        bitWrite(display_data[address][startRow + i], (startCol + j) % 8, 0);
       }
     }
-    return 0;
-  }
-
-  // find the 3 digits of the value
-  byte digit3 = value % 10;
-  byte digit2 = ((value - digit3) / 10) % 10;
-  byte digit1 = ((value - digit3 - 10 * digit2) / 100) % 10;
-
-  // digit 1
-  switch (digit1) {
-    case 0:
-      lc.setLed(address, row + 3, (col + 3)%8, false);
-      lc.setLed(address, row + 3, col + 1, false);
-      break;
-    case 1:
-      lc.setLed(address, row + 3, (col + 3)%8, true);
-      lc.setLed(address, row + 3, col + 1, true);
-      break;
-  }
-
-  // digit 2
-  // don't write leading zeros
-  if (digit1 == 0 && digit2 == 0) {
-    lc.setLed(address, row + 0, col + 0, false);
-    lc.setLed(address, row + 1, col + 0, false);
-    lc.setLed(address, row + 2, col + 0, false);
-    lc.setLed(address, row + 3, col + 0, false);
-    lc.setLed(address, row + 2, col + 1, false);
-    lc.setLed(address, row + 0, col + 1, false);
-    lc.setLed(address, row + 1, col + 1, false);
   }
   else {
-    switch (digit2) {
+
+    // find the 3 digits of the value
+    byte digit3 = value % 10;
+    byte digit2 = ((value - digit3) / 10) % 10;
+    byte digit1 = ((value - digit3 - 10 * digit2) / 100) % 10;
+
+    // digit 1
+    switch (digit1) {
       case 0:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, true);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, false);
+        bitWrite(display_data[address][startRow + 3], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 3], (startCol + 2) % 8, 0);
         break;
       case 1:
-        lc.setLed(address, row + 0, col + 0, false);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, false);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, false);
-        lc.setLed(address, row + 1, col + 1, false);
+        bitWrite(display_data[address][startRow + 3], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 2) % 8, 1);
+        break;
+    }
+
+    // digit 2
+    // don't write leading zeros
+    if (digit1 == 0 && digit2 == 0) {
+      bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
+      bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
+      bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 0);
+      bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
+      bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+      bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
+      bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+    }
+    else {
+      switch (digit2) {
+        case 0:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          break;
+        case 1:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          break;
+        case 2:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 3:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 4:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 5:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 6:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 7:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          break;
+        case 8:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+        case 9:
+          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
+          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          break;
+      }
+    }
+
+    switch (digit3) {
+      case 0:
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
+        break;
+      case 1:
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
         break;
       case 2:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, false);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, true);
-        lc.setLed(address, row + 0, col + 1, false);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 3:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, false);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 4:
-        lc.setLed(address, row + 0, col + 0, false);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, false);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 5:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, false);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 6:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, false);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, true);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 7:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, false);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, false);
-        lc.setLed(address, row + 1, col + 1, false);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
         break;
       case 8:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, true);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
       case 9:
-        lc.setLed(address, row + 0, col + 0, true);
-        lc.setLed(address, row + 1, col + 0, true);
-        lc.setLed(address, row + 2, col + 0, true);
-        lc.setLed(address, row + 3, col + 0, true);
-        lc.setLed(address, row + 2, col + 1, false);
-        lc.setLed(address, row + 0, col + 1, true);
-        lc.setLed(address, row + 1, col + 1, true);
+        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
+        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
         break;
     }
   }
 
-  switch (digit3) {
-    case 0:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, true);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, false);
-      break;
-    case 1:
-      lc.setLed(address, row + 0, col + 2, false);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, false);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, false);
-      lc.setLed(address, row + 1, (col + 3)%8, false);
-      break;
-    case 2:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, false);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, true);
-      lc.setLed(address, row + 0, (col + 3)%8, false);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 3:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, false);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 4:
-      lc.setLed(address, row + 0, col + 2, false);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, false);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 5:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, false);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 6:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, false);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, true);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 7:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, false);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, false);
-      lc.setLed(address, row + 1, (col + 3)%8, false);
-      break;
-    case 8:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, true);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
-    case 9:
-      lc.setLed(address, row + 0, col + 2, true);
-      lc.setLed(address, row + 1, col + 2, true);
-      lc.setLed(address, row + 2, col + 2, true);
-      lc.setLed(address, row + 3, col + 2, true);
-      lc.setLed(address, row + 2, (col + 3)%8, false);
-      lc.setLed(address, row + 0, (col + 3)%8, true);
-      lc.setLed(address, row + 1, (col + 3)%8, true);
-      break;
+  // write new data to displays
+  for (int i = 0; i < 4; i++) {
+    lc.setRow(address, startRow + i, display_data[address][startRow + i]);
   }
 }
