@@ -6,11 +6,11 @@
 
    by TimMJN
 
-   v1.0
-   13-05-2021
+   v1.1
+   15-05-2021
 
    For schematics and other information, see
-   https://github.com/TimMJN/Arduino-Sequencer
+   https://github.com/TimMJN/Arduino-Clock-Divider
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,7 +312,7 @@ void set_outputs_low() {
   noInterrupts(); // do not interrupt writing to the shift register
 
   digitalWrite(SER_DATA_PIN, LOW); // set output low
-  for (int i = 0; i < N_OUTS; i++) {
+  for (int i = (N_OUTS-1); i >= 0; i--) {
     digitalWrite(SER_CLOCK_PIN, HIGH); // give clock pin a pulse
     digitalWrite(SER_CLOCK_PIN, LOW);
   }
@@ -327,7 +327,7 @@ void set_outputs_next() {
   noInterrupts(); // do not interrupt writing to the shift register
 
   // loop over the outputs
-  for (int i = 0; i < N_OUTS; i++) {
+  for (int i = (N_OUTS-1); i >= 0; i--) {
     if (counter[i] == 0)                 // check the counter value
       digitalWrite(SER_DATA_PIN, HIGH);  // set output high
     else

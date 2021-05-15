@@ -5,8 +5,8 @@
     to form numbers. This is neccesairy as this combination does
     not follow the standard 7-segment display configuration.
 
-    It's quite messy. If you use different displays, or have
-    wired them differently, this is the function you need to change.
+    If you use different displays, or have wired them differently, 
+    this is the function you need to change.
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,13 +20,13 @@ void set_display(byte index, byte value) {
   // this is specific to how to displays are wired to the MAX7219's
   byte address = index / 4;
   byte startRow = 4 * ((index % 4) / 2);
-  byte startCol = (4 * (index % 2)) + 3;
+  byte startCol = 4 * ((index + 1) % 2);
 
   // clear the screen if CLEAR value is found
   if (value == CLEAR) {
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-        bitWrite(display_data[address][startRow + i], (startCol + j) % 8, 0);
+        bitWrite(display_data[address][startRow + i], startCol + j, 0);
       }
     }
   }
@@ -40,211 +40,211 @@ void set_display(byte index, byte value) {
     // digit 1
     switch (digit1) {
       case 0:
-        bitWrite(display_data[address][startRow + 3], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 3], (startCol + 2) % 8, 0);
+        bitWrite(display_data[address][startRow + 3], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 3], startCol + 2, 0);
         break;
       case 1:
-        bitWrite(display_data[address][startRow + 3], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 2) % 8, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 2, 1);
         break;
     }
 
     // digit 2
     // don't write leading zeros
     if (digit1 == 0 && digit2 == 0) {
-      bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
-      bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
-      bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 0);
-      bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
-      bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-      bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
-      bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+      bitWrite(display_data[address][startRow + 0], startCol + 3, 0);
+      bitWrite(display_data[address][startRow + 1], startCol + 3, 0);
+      bitWrite(display_data[address][startRow + 2], startCol + 3, 0);
+      bitWrite(display_data[address][startRow + 3], startCol + 3, 0);
+      bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+      bitWrite(display_data[address][startRow + 0], startCol + 2, 0);
+      bitWrite(display_data[address][startRow + 1], startCol + 2, 0);
     }
     else {
       switch (digit2) {
         case 0:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 0);
           break;
         case 1:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 0);
           break;
         case 2:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 3:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 4:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 5:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 6:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 7:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 0);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 0);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 0);
           break;
         case 8:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
         case 9:
-          bitWrite(display_data[address][startRow + 0], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 3], (startCol + 3) % 8, 1);
-          bitWrite(display_data[address][startRow + 2], (startCol + 2) % 8, 0);
-          bitWrite(display_data[address][startRow + 0], (startCol + 2) % 8, 1);
-          bitWrite(display_data[address][startRow + 1], (startCol + 2) % 8, 1);
+          bitWrite(display_data[address][startRow + 0], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 3], startCol + 3, 1);
+          bitWrite(display_data[address][startRow + 2], startCol + 2, 0);
+          bitWrite(display_data[address][startRow + 0], startCol + 2, 1);
+          bitWrite(display_data[address][startRow + 1], startCol + 2, 1);
           break;
       }
     }
 
     switch (digit3) {
       case 0:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 0);
         break;
       case 1:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 0);
         break;
       case 2:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 3:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 4:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 5:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 6:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 7:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 0);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 0);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 0);
         break;
       case 8:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
       case 9:
-        bitWrite(display_data[address][startRow + 0], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 3], (startCol + 1) % 8, 1);
-        bitWrite(display_data[address][startRow + 2], (startCol + 0) % 8, 0);
-        bitWrite(display_data[address][startRow + 0], (startCol + 0) % 8, 1);
-        bitWrite(display_data[address][startRow + 1], (startCol + 0) % 8, 1);
+        bitWrite(display_data[address][startRow + 0], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 3], startCol + 1, 1);
+        bitWrite(display_data[address][startRow + 2], startCol + 0, 0);
+        bitWrite(display_data[address][startRow + 0], startCol + 0, 1);
+        bitWrite(display_data[address][startRow + 1], startCol + 0, 1);
         break;
     }
   }
