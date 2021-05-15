@@ -1,0 +1,3 @@
+[submodule "arduino_clock_divider_firmware/LedControl"]
+	path = arduino_clock_divider_firmware/LedControl
+	url = https://github.com/wayoda/LedControl
