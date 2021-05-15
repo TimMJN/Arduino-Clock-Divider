@@ -19,3 +19,5 @@ arduino_clock_divider_schematic/arduino_clock_divider-cache.lib
 *.gbs
 *.gbl
 *.zip
+*.csv
+*.xlsx
