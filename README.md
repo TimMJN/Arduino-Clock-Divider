@@ -9,6 +9,8 @@
  - rotate up/down and reset inputs
  - adjustable number of rotating outputs
 
+A [short demonstration](https://youtu.be/Doicn2hUYTk) is available on YouTube.
+
 # Frequently Asked Questions
 # The build
 #### Do you have PCBs / panels available?
