@@ -1,5 +1,5 @@
 # Arduino Clock Divider
- Clock divider module based on Arduino Nano, compatible with Eurorack and Kosmo modular synthesizers. This is a DIY project, suitable for beginners, although a general knowledge of electronics, basic tools and skills are required to build this module. The schematics presented here feature:
+Clock divider module based on Arduino Nano, compatible with Eurorack and Kosmo modular synthesizers. This is a DIY project, suitable for beginners, although a general knowledge of electronics, basic tools and skills are required to build this module. The schematics presented here feature:
  
  - 8 buffered outputs
  - adjustable division from 1 to 199
@@ -12,7 +12,7 @@
 A [short demonstration](https://youtu.be/Doicn2hUYTk) is available on YouTube.
 
 # Frequently Asked Questions
-# The build
+## The build
 #### Do you have PCBs / panels available?
 A PCB design for Kosmo format is available, along with a panel drill guide. I might have some PCBs available, please get in touch. However, it is also possible to build this design on perfboard/stripboard. I want to encourage any builder to come up with their own panel layout, make whatever feels natural to them. If you document your work, I'll be happy to add it here for future reference.
 
