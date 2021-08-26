@@ -20,6 +20,9 @@ A PCB design for Kosmo format is available, along with a panel drill guide. I mi
 Yes you can. Though chances are you might need to edit the `setDisplay` function, which maps the MAX7219 display drivers to the displays.
 
 ## The code
+#### Submodules
+This repository uses submodules to include libraries in the firmware. Please make sure, when cloning this repository, to also include the submodules in the [`src`](https://github.com/TimMJN/Arduino-Clock-Divider/tree/main/arduino_clock_divider_firmware/src) directory.
+
 #### What settings are available to me in the firmware?
 - `N_ROTATE` sets how many of the outputs are subjected to rotation. Its default setting is 4, which means that the lower 4 division are rotate when the rotate inputs are triggered. See below what division rotation actually means.
 - `MIN_DIV` and `MAX_DIV` set the minimum and maximum available divisions.
