@@ -1,14 +1,11 @@
 
 *.tmp
-*.kicad_pcb-bak
 *.sch-bak
-arduino_clock_divider_schematic/arduino_clock_divider.sch
-arduino_clock_divider_schematic/arduino_clock_divider.pro
-arduino_clock_divider_schematic/fp-info-cache
-arduino_clock_divider_schematic/schematic-positions-to-layout.debug
-arduino_clock_divider_schematic/arduino_clock_divider.net
-arduino_clock_divider_schematic/arduino_clock_divider.kicad_pcb
-arduino_clock_divider_schematic/arduino_clock_divider-cache.lib
+*.sch
+*.pro
+*fp-info-cache
+*.debug
+*.net
 *.drl
 *.gbr
 *.gto
@@ -21,5 +18,8 @@ arduino_clock_divider_schematic/arduino_clock_divider-cache.lib
 *.zip
 *.csv
 *.xlsx
-*.kicad_pcb
+*.kicad_*
 *.pro
+*.dcm
+*.lib
+*/sym-lib-table
