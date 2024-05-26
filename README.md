@@ -9,7 +9,7 @@ Clock divider module based on Arduino Nano, compatible with Eurorack and Kosmo m
  - rotate up/down and reset inputs
  - adjustable number of rotating outputs
 
-A [short demonstration](https://youtu.be/Doicn2hUYTk) is available on YouTube. View the [schematic](https://github.com/TimMJN/Arduino-Clock-Divider/blob/main/arduino_clock_divider_schematic/arduino_clock_divider.pdf) and [bill of materials](https://htmlpreview.github.io/?https://github.com/TimMJN/Arduino-Clock-Divider/blob/main/arduino_clock_divider_schematic/arduino_clock_divider_BOM.html) on this repository.
+A [short demonstration](https://youtu.be/Doicn2hUYTk) is available on YouTube. View the [schematic](https://github.com/TimMJN/Arduino-Clock-Divider/blob/mainschematic+BOM/arduino_clock_divider.pdf) and [bill of materials](https://htmlpreview.github.io/?https://github.com/TimMJN/Arduino-Clock-Divider/blob/mainschematic%2BBOM/arduino_clock_divider_BOM.html) on this repository.
 
 # Frequently Asked Questions
 ## The build
